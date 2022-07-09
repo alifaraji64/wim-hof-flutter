@@ -1,11 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:animated_background/animated_background.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:wim_hof/core/viewModels/BreathScreenViewModel.dart';
+import 'package:wim_hof/meta/screens/ResultScreen.dart';
 
 class BreathingScreen extends StatefulWidget {
   const BreathingScreen({Key? key}) : super(key: key);
@@ -42,61 +40,87 @@ class _BreathingScreenState extends State<BreathingScreen>
         .breathTimerStart();
   }
 
+  late BreathScreenViewModel viewModel;
+
+  @override
+  void didChangeDependencies() {
+    viewModel = Provider.of<BreathScreenViewModel>(context, listen: false);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    viewModel.reset();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Provider.of<BreathScreenViewModel>(context, listen: false)
-            .fifteenRetentioStart();
+    return WillPopScope(
+      onWillPop: () async {
+        Provider.of<BreathScreenViewModel>(context, listen: false).reset();
+        return true;
       },
-      child: Scaffold(
-        body: SafeArea(
-          child: AnimatedBackground(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'number of breaths: ' + 10.toString(),
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 18),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height / 2.6,
-                  ),
-                  Center(
-                      child: Text(
-                          Provider.of<BreathScreenViewModel>(context,
-                                  listen: true)
-                              .counter
-                              .toString(),
+      child: GestureDetector(
+        onTap: () {
+          Provider.of<BreathScreenViewModel>(context, listen: false)
+              .fifteenRetentioStart();
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: AnimatedBackground(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'number of breaths: ' + 10.toString(),
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 80,
-                              fontWeight: FontWeight.bold))),
-                  SizedBox(height: MediaQuery.of(context).size.height / 3),
-                  !Provider.of<BreathScreenViewModel>(context, listen: false)
-                          .breathIsDone
-                      ? Center(
-                          child: MaterialButton(
-                          color: Colors.white,
-                          child: const Text('end session'),
-                          onPressed: () {},
-                        ))
-                      : SizedBox()
-                ],
-              ),
-              vsync: this,
-              behaviour: RandomParticleBehaviour(
-                  options: const ParticleOptions(
-                      baseColor: Colors.blue,
-                      spawnMaxRadius: 30,
-                      spawnMinRadius: 20,
-                      spawnMaxSpeed: 100,
-                      spawnMinSpeed: 50))),
+                              color: Colors.white, fontSize: 18),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 2.6,
+                    ),
+                    Center(
+                        child: Text(
+                            Provider.of<BreathScreenViewModel>(context,
+                                    listen: true)
+                                .counter
+                                .toString(),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 80,
+                                fontWeight: FontWeight.bold))),
+                    SizedBox(height: MediaQuery.of(context).size.height / 3),
+                    !Provider.of<BreathScreenViewModel>(context, listen: false)
+                            .breathIsDone
+                        ? Center(
+                            child: MaterialButton(
+                            color: Colors.white,
+                            child: const Text('end session'),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      child: const ResultScreen(),
+                                      type: PageTransitionType.bottomToTop));
+                            },
+                          ))
+                        : SizedBox()
+                  ],
+                ),
+                vsync: this,
+                behaviour: RandomParticleBehaviour(
+                    options: const ParticleOptions(
+                        baseColor: Colors.blue,
+                        spawnMaxRadius: 30,
+                        spawnMinRadius: 20,
+                        spawnMaxSpeed: 100,
+                        spawnMinSpeed: 50))),
+          ),
         ),
       ),
     );

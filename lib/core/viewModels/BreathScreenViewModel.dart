@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:wim_hof/core/services/audio.dart';
 
@@ -11,6 +10,8 @@ class BreathScreenViewModel extends ChangeNotifier {
   Timer? fifteenTimer;
   Timer? breathTimer;
   bool _fifteenIsStarted = false;
+  static const numberOfBreaths = 30;
+  List<int> times = [20, 50, 60, 90, 144, 567, 31];
   playAudio(String path) async {
     await _audio.playAudio(path);
   }
@@ -30,7 +31,7 @@ class BreathScreenViewModel extends ChangeNotifier {
     _fifteenIsStarted = true;
     //cancel the retention timer
     retentionTimer!.cancel();
-    print(counter);
+    handleSaveTime(counter);
     counter = 0;
     notifyListeners();
     Timer.periodic(const Duration(seconds: 1), (timer) async {
@@ -55,9 +56,9 @@ class BreathScreenViewModel extends ChangeNotifier {
     counter = 0;
     breathIsDone = false;
     await playAudio('ready.mp3');
-    Timer.periodic(const Duration(seconds: 3), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       breathTimer = timer;
-      if (counter == 5) {
+      if (counter == 2) {
         timer.cancel();
         counter = 0;
         notifyListeners();
@@ -68,5 +69,33 @@ class BreathScreenViewModel extends ChangeNotifier {
       counter++;
       notifyListeners();
     });
+  }
+
+  handleSaveTime(int counter) async {
+    //final prefs = await SharedPreferences.getInstance();
+    times.add(counter);
+    print(times);
+    print('saveing data');
+  }
+
+  void reset() {
+    disposePlayer();
+    breathTimer!.cancel();
+    retentionTimer != null ? retentionTimer!.cancel() : null;
+    fifteenTimer != null ? fifteenTimer!.cancel() : null;
+    //times.clear();
+  }
+
+  String convertToMin(int seconds) {
+    return Duration(seconds: seconds).inMinutes.toString() +
+        ':' +
+        //add one zero to the soconds to make the seconds 2 digits for appearence purposes
+        (seconds.remainder(60).toString().length == 1
+            ? seconds.remainder(60).toString() + '0'
+            : seconds.remainder(60).toString());
+  }
+
+  disposePlayer() {
+    _audio.dispose();
   }
 }
