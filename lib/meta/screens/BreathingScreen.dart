@@ -2,6 +2,7 @@ import 'package:animated_background/animated_background.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wim_hof/core/viewModels/BreathScreenViewModel.dart';
 import 'package:wim_hof/meta/screens/ResultScreen.dart';
 
@@ -14,30 +15,33 @@ class BreathingScreen extends StatefulWidget {
 
 class _BreathingScreenState extends State<BreathingScreen>
     with TickerProviderStateMixin {
+  late SharedPreferences prefs;
+  int breaths = 30;
   @override
   void initState() {
     super.initState();
-    (Provider.of<BreathScreenViewModel>(context, listen: false).breathTimer !=
-            null
-        ? Provider.of<BreathScreenViewModel>(context, listen: false)
-            .breathTimer!
-            .cancel()
+    findBreaths();
+    BreathScreenViewModel viewModel =
+        Provider.of<BreathScreenViewModel>(context, listen: false);
+    viewModel.times.clear();
+    (viewModel.breathTimer != null
+        ? viewModel.breathTimer!.cancel()
         : debugPrint('breath timer is null'));
-    (Provider.of<BreathScreenViewModel>(context, listen: false)
-                .retentionTimer !=
-            null
-        ? Provider.of<BreathScreenViewModel>(context, listen: false)
-            .retentionTimer!
-            .cancel()
+    (viewModel.retentionTimer != null
+        ? viewModel.retentionTimer!.cancel()
         : debugPrint('breath timer is null'));
-    (Provider.of<BreathScreenViewModel>(context, listen: false).fifteenTimer !=
-            null
-        ? Provider.of<BreathScreenViewModel>(context, listen: false)
-            .fifteenTimer!
-            .cancel()
+    (viewModel.fifteenTimer != null
+        ? viewModel.fifteenTimer!.cancel()
         : debugPrint('breath timer is null'));
-    Provider.of<BreathScreenViewModel>(context, listen: false)
-        .breathTimerStart();
+    viewModel.breathTimerStart();
+  }
+
+  findBreaths() async {
+    prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('breaths')) return;
+    setState(() {
+      breaths = prefs.getInt('breaths')!;
+    });
   }
 
   late BreathScreenViewModel viewModel;
@@ -75,7 +79,7 @@ class _BreathingScreenState extends State<BreathingScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'number of breaths: ' + 10.toString(),
+                          'number of breaths: ' + breaths.toString(),
                           style: const TextStyle(
                               color: Colors.white, fontSize: 18),
                         )
@@ -109,7 +113,7 @@ class _BreathingScreenState extends State<BreathingScreen>
                                       type: PageTransitionType.bottomToTop));
                             },
                           ))
-                        : SizedBox()
+                        : const SizedBox()
                   ],
                 ),
                 vsync: this,

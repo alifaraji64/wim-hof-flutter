@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wim_hof/core/services/audio.dart';
 
 class BreathScreenViewModel extends ChangeNotifier {
@@ -11,7 +12,7 @@ class BreathScreenViewModel extends ChangeNotifier {
   Timer? breathTimer;
   bool _fifteenIsStarted = false;
   static const numberOfBreaths = 30;
-  List<int> times = [20, 50, 60, 90, 144, 567, 31];
+  List<int> times = [];
   playAudio(String path) async {
     await _audio.playAudio(path);
   }
@@ -56,9 +57,11 @@ class BreathScreenViewModel extends ChangeNotifier {
     counter = 0;
     breathIsDone = false;
     await playAudio('ready.mp3');
+    final prefs = await SharedPreferences.getInstance();
+    int breaths = prefs.containsKey('breaths') ? prefs.getInt('breaths')! : 4;
     Timer.periodic(const Duration(seconds: 1), (timer) {
       breathTimer = timer;
-      if (counter == 2) {
+      if (counter == breaths) {
         timer.cancel();
         counter = 0;
         notifyListeners();
@@ -74,15 +77,17 @@ class BreathScreenViewModel extends ChangeNotifier {
   handleSaveTime(int counter) async {
     //final prefs = await SharedPreferences.getInstance();
     times.add(counter);
-    print(times);
-    print('saveing data');
+    //print(times);
+    //print('saveing data');
   }
 
   void reset() {
     disposePlayer();
-    breathTimer!.cancel();
+    retentionTimer != null ? breathTimer!.cancel() : null;
     retentionTimer != null ? retentionTimer!.cancel() : null;
     fifteenTimer != null ? fifteenTimer!.cancel() : null;
+    _fifteenIsStarted = false;
+    breathIsDone = false;
     //times.clear();
   }
 
@@ -93,6 +98,21 @@ class BreathScreenViewModel extends ChangeNotifier {
         (seconds.remainder(60).toString().length == 1
             ? seconds.remainder(60).toString() + '0'
             : seconds.remainder(60).toString());
+  }
+
+  void saveToSP() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('times')) {
+      print('we have times save din db');
+      List<String> newList = [
+        ...prefs.getStringList('times')!,
+        ...[...times.map((e) => e.toString())]
+      ];
+      prefs.setStringList('times', newList);
+      //print(newList);
+      return;
+    }
+    prefs.setStringList('times', [...times.map((e) => e.toString())]);
   }
 
   disposePlayer() {

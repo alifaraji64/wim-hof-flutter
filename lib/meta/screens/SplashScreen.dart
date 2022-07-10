@@ -13,11 +13,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
           context,
           PageTransition(
-              child: HomeScreen(), type: PageTransitionType.bottomToTop));
+              child: const HomeScreen(), type: PageTransitionType.bottomToTop));
     });
     super.initState();
   }
@@ -29,18 +29,25 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(
+              height: 20,
+            ),
             Center(
               child: Image.asset(
                 'assets/splash.png',
                 width: 250,
+                color: Colors.white,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             const Center(
               child: Text(
-                  'build unbeatable stamina and edurance with wim hof breating method',
+                  'Build Unbeatable Stamina and Edurance to Imporve Athletic Performance with Wim Hof Breating',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white)),
             )
           ],
         ),

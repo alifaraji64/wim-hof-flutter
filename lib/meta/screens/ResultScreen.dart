@@ -1,6 +1,7 @@
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wim_hof/core/viewModels/BreathScreenViewModel.dart';
 
 class ResultScreen extends StatefulWidget {
@@ -12,6 +13,24 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen>
     with TickerProviderStateMixin {
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, (() {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.blue[900],
+        content: const Text(
+          'results are automatically saved',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        duration: const Duration(seconds: 4),
+      ));
+    }));
+    Provider.of<BreathScreenViewModel>(context, listen: false).saveToSP();
+    Provider.of<BreathScreenViewModel>(context, listen: false).reset();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +47,7 @@ class _ResultScreenState extends State<ResultScreen>
                         .entries
                         .map((entry) => Container(
                               color: Colors.blue,
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               width: 200,
                               child: Row(
                                 mainAxisAlignment:
@@ -36,12 +55,14 @@ class _ResultScreenState extends State<ResultScreen>
                                 children: [
                                   Text(
                                     'Round ' + (entry.key + 1).toString(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white, fontSize: 18),
                                   ),
                                   Text(
                                     entry.value < 60
-                                        ? entry.value.toString()
+                                        ? '0:' +
+                                            (entry.value < 10 ? '0' : '') +
+                                            entry.value.toString()
                                         : Provider.of<BreathScreenViewModel>(
                                                 context,
                                                 listen: false)
