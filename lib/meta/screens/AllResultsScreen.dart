@@ -37,18 +37,22 @@ class _AllResultsScreenState extends State<AllResultsScreen> {
               bottom: BorderSide(width: 1),
             )),
             barGroups: prefs != null
-                ? prefs!
-                    .getStringList('times')!
-                    .map(
-                      (e) => BarChartGroupData(x: int.parse(e), barRods: [
-                        BarChartRodData(
-                            toY: double.parse(e),
-                            width: 3,
-                            color: Colors.amber,
-                            fromY: 0),
-                      ]),
-                    )
-                    .toList()
+                ? (prefs!.get('times') != null
+                    ? prefs!
+                        .getStringList('times')!
+                        .map(
+                          (e) => BarChartGroupData(x: int.parse(e), barRods: [
+                            BarChartRodData(
+                                toY: double.parse(e),
+                                width: 3,
+                                color: Colors.amber,
+                                fromY: 0),
+                          ]),
+                        )
+                        .toList()
+                    : [
+                        BarChartGroupData(x: 1),
+                      ])
                 : [
                     BarChartGroupData(x: 1),
                   ])),

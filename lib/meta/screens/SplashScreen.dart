@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(
-              height: 20,
+              height: 30,
             ),
             Center(
               child: Image.asset(
@@ -39,14 +39,14 @@ class _SplashScreenState extends State<SplashScreen> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 60),
             const Center(
               child: Text(
-                  'Build Unbeatable Stamina and Edurance to Imporve Athletic Performance with Wim Hof Breating',
+                  'build unbeatable stamina and edurance to imporve athletic performance',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w500,
                       color: Colors.white)),
             )
           ],

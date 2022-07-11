@@ -58,7 +58,9 @@ class BreathScreenViewModel extends ChangeNotifier {
     breathIsDone = false;
     await playAudio('ready.mp3');
     final prefs = await SharedPreferences.getInstance();
-    int breaths = prefs.containsKey('breaths') ? prefs.getInt('breaths')! : 4;
+    int breaths = prefs.containsKey('breaths')
+        ? prefs.getInt('breaths')!
+        : numberOfBreaths;
     Timer.periodic(const Duration(seconds: 1), (timer) {
       breathTimer = timer;
       if (counter == breaths) {
