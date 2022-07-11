@@ -61,7 +61,7 @@ class BreathScreenViewModel extends ChangeNotifier {
     int breaths = prefs.containsKey('breaths')
         ? prefs.getInt('breaths')!
         : numberOfBreaths;
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 3), (timer) {
       breathTimer = timer;
       if (counter == breaths) {
         timer.cancel();
