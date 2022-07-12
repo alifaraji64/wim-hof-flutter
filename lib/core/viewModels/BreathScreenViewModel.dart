@@ -98,7 +98,7 @@ class BreathScreenViewModel extends ChangeNotifier {
         ':' +
         //add one zero to the soconds to make the seconds 2 digits for appearence purposes
         (seconds.remainder(60).toString().length == 1
-            ? seconds.remainder(60).toString() + '0'
+            ? '0' + seconds.remainder(60).toString()
             : seconds.remainder(60).toString());
   }
 
