@@ -1,4 +1,4 @@
-# wim_hof
+# wim_hof_clone
 
 A new Flutter project.
 
